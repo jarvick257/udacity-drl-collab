@@ -18,7 +18,9 @@ class Actor(nn.Module):
         self.seed = T.manual_seed(seed)
 
         self.fc1 = nn.Linear(n_inputs, 128)
+        self.bn1 = nn.BatchNorm1d(128)
         self.fc2 = nn.Linear(128, 65)
+        self.bn2 = nn.BatchNorm1d(65)
         self.fc3 = nn.Linear(65, n_actions)
         self.reset_parameters()
 
@@ -28,8 +30,8 @@ class Actor(nn.Module):
         self.fc3.weight.data.uniform_(-3e-3, 3e-3)
 
     def forward(self, state):
-        x = F.relu(self.fc1(state))
-        x = F.relu(self.fc2(x))
+        x = F.relu(self.bn1(self.fc1(state)))
+        x = F.relu(self.bn2(self.fc2(x)))
         return F.softsign(self.fc3(x))
 
     def save_checkpoint(self, path):
@@ -45,7 +47,9 @@ class Critic(nn.Module):
         self.seed = T.manual_seed(seed)
 
         self.fcs1 = nn.Linear(n_inputs, 128)
+        self.bn1 = nn.BatchNorm1d(128)
         self.fc2 = nn.Linear(128 + n_actions, 64)
+        self.bn2 = nn.BatchNorm1d(64)
         self.fc3 = nn.Linear(64, 1)
         self.reset_parameters()
 
@@ -55,9 +59,9 @@ class Critic(nn.Module):
         self.fc3.weight.data.uniform_(-3e-3, 3e-3)
 
     def forward(self, state, action):
-        xs = F.relu(self.fcs1(state))
+        xs = F.relu(self.bn1(self.fcs1(state)))
         x = T.cat((xs, action), dim=1)
-        x = F.relu(self.fc2(x))
+        x = F.relu(self.bn2(self.fc2(x)))
         return self.fc3(x)
 
     def save_checkpoint(self, path):

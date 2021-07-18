@@ -26,11 +26,11 @@ agent = Agent(
 
 scores = []
 thetas = []
-avg_score = 0
+avg_scores = []
 best_score = -np.inf
 game = 0
 try:
-    while len(scores) < 100 or avg_score < 0.5:
+    while len(avg_scores) < 100 or avg_scores[-1] < 1.0:
         game += 1
         score = np.zeros(num_agents)
         t = 0
@@ -46,22 +46,26 @@ try:
             dones = env_info.local_done
             agent.step(states, action, rewards, states_, dones)
             states = states_
-            score += np.mean(rewards)
+            score += rewards
             t += 1
             print(t, end="\r")
         scores.append(np.max(score))
         thetas.append(agent.noise.theta)
-        avg_score = np.mean(scores[-100:])
+        avg_scores.append(np.mean(scores[-100:]))
         print(
-            f"{t}, Eps {game:5d}: theta: {agent.noise.theta:0.2f}, avg: {avg_score:6.2f}, last: {scores[-1]:6.2f}"
+            f"{t}, Eps {game:5d}: theta: {agent.noise.theta:0.2f}, avg: {avg_scores[-1]:6.4f}, last: {scores[-1]:6.4f}"
         )
-        if avg_score > best_score and game > 10:
+        if avg_scores[-1] > best_score and game > 10:
             agent.save_checkpoint("checkpoints")
-            best_score = avg_score
+            best_score = avg_scores[-1]
 except KeyboardInterrupt:
     pass
 
 env.close()
 plot_learning_curve(
-    scores, thetas, "checkpoints/progress.png", "Learning Progess (Avg over agents)"
+    scores=scores,
+    avg_scores=avg_scores,
+    thetas=thetas,
+    title="Learning Progess (Avg over agents)",
+    figure_file="checkpoints/progress.png",
 )
