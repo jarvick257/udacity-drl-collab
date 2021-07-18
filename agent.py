@@ -12,8 +12,8 @@ from model import Actor, Critic
 
 BUFFER_SIZE = int(1e5)
 BATCH_SIZE = 256
-LEARN_EVERY = 10
-GAMMA = 0.90
+LEARN_EVERY = 2
+GAMMA = 0.99
 TAU = 1e-2
 LR_ACTOR = 0.0001
 LR_CRITIC = 0.0001
@@ -34,7 +34,7 @@ class Agent:
         self.optim_critic = Adam(self.local_critic.parameters(), lr=LR_CRITIC)
 
         self.memory = ReplayBuffer(BUFFER_SIZE, random_seed)
-        self.noise = OUNoise((n_agents, n_actions), random_seed)
+        self.noise = OUNoise((n_agents, n_actions), random_seed, theta_incr=0.001)
         self.num_steps = 0
 
     def step(self, states, actions, rewards, next_states, dones):

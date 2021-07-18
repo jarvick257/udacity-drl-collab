@@ -33,12 +33,12 @@ class OUNoise:
 if __name__ == "__main__":
     import matplotlib.pyplot as plt
 
-    noise = OUNoise(1, sigma=0.01, theta=0.10)
+    noise = OUNoise(1, sigma=0.001, theta=0.10)
     x = np.arange(50)
     y1 = [noise.sample() for _ in x]
-    noise = OUNoise(1, sigma=0.01, theta=0.5)
+    noise = OUNoise(1, sigma=0.001, theta=0.5)
     y2 = [noise.sample() for _ in x]
-    noise = OUNoise(1, sigma=0.01, theta=0.90)
+    noise = OUNoise(1, sigma=0.001, theta=0.90)
     noise.theta = 0.95
     y3 = [noise.sample() for _ in x]
 

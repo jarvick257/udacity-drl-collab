@@ -17,9 +17,9 @@ class Actor(nn.Module):
         super(Actor, self).__init__()
         self.seed = T.manual_seed(seed)
 
-        self.fc1 = nn.Linear(n_inputs, 256)
-        self.fc2 = nn.Linear(256, 128)
-        self.fc3 = nn.Linear(128, n_actions)
+        self.fc1 = nn.Linear(n_inputs, 128)
+        self.fc2 = nn.Linear(128, 65)
+        self.fc3 = nn.Linear(65, n_actions)
         self.reset_parameters()
 
     def reset_parameters(self):
@@ -44,9 +44,9 @@ class Critic(nn.Module):
         super(Critic, self).__init__()
         self.seed = T.manual_seed(seed)
 
-        self.fcs1 = nn.Linear(n_inputs, 256)
-        self.fc2 = nn.Linear(256 + n_actions, 128)
-        self.fc3 = nn.Linear(128, 1)
+        self.fcs1 = nn.Linear(n_inputs, 128)
+        self.fc2 = nn.Linear(128 + n_actions, 64)
+        self.fc3 = nn.Linear(64, 1)
         self.reset_parameters()
 
     def reset_parameters(self):

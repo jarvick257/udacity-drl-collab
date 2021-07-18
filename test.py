@@ -1,9 +1,10 @@
+import numpy as np
 import time
 import sys
 from unityagents import UnityEnvironment
 from agent import Agent
 
-env = UnityEnvironment("Reacher_Linux_single/Reacher.x86_64")
+env = UnityEnvironment("Tennis_Linux/Tennis.x86_64")
 brain_name = env.brain_names[0]
 brain = env.brains[brain_name]
 
@@ -21,16 +22,16 @@ agent = Agent(
 )
 agent.load_checkpoint(sys.argv[1])
 
-for i in range(10):
+for i in range(100):
     env_info = env.reset(train_mode=False)[brain_name]
     state = env_info.vector_observations
     done = False
-    score = 0
+    score = np.zeros(num_agents)
     while not done:
         action = agent.act(state, add_noise=False)
         env_info = env.step(action)[brain_name]
         state = env_info.vector_observations
-        score += env_info.rewards[0]
+        score += env_info.rewards
         done = env_info.local_done[0]
-    print(i + 1, score)
+    print(i + 1, score, env_info.local_done)
 env.close()

@@ -8,7 +8,7 @@ from utils import plot_learning_curve
 
 seed = 123
 
-env = UnityEnvironment("Reacher_Linux_multi/Reacher.x86_64")
+env = UnityEnvironment("Tennis_Linux/Tennis.x86_64")
 brain_name = env.brain_names[0]
 brain = env.brains[brain_name]
 
@@ -26,13 +26,13 @@ agent = Agent(
 
 scores = []
 thetas = []
-avg_over_30 = 0
+avg_score = 0
 best_score = -np.inf
 game = 0
 try:
-    while avg_over_30 < 100:
+    while len(scores) < 100 or avg_score < 0.5:
         game += 1
-        score = 0
+        score = np.zeros(num_agents)
         t = 0
         dones = [False] * num_agents
         env_info = env.reset(train_mode=True)[brain_name]
@@ -49,19 +49,15 @@ try:
             score += np.mean(rewards)
             t += 1
             print(t, end="\r")
-        scores.append(score)
+        scores.append(np.max(score))
         thetas.append(agent.noise.theta)
-        if score > 30.0:
-            avg_over_30 += 1
-        else:
-            avg_over_30 = 0
+        avg_score = np.mean(scores[-100:])
         print(
-            f"Eps {game:5d}: theta: {agent.noise.theta:0.2f}, score {score:6.2f}, games over 30: {avg_over_30}"
+            f"{t}, Eps {game:5d}: theta: {agent.noise.theta:0.2f}, avg: {avg_score:6.2f}, last: {scores[-1]:6.2f}"
         )
-        avg = np.mean(scores[-10:])
-        if avg > best_score and game > 10:
+        if avg_score > best_score and game > 10:
             agent.save_checkpoint("checkpoints")
-            best_score = avg
+            best_score = avg_score
 except KeyboardInterrupt:
     pass
 
