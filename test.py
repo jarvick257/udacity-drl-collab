@@ -22,7 +22,7 @@ agent = Agent(
 )
 agent.load_checkpoint(sys.argv[1])
 
-for i in range(100):
+for i in range(10):
     env_info = env.reset(train_mode=False)[brain_name]
     state = env_info.vector_observations
     done = False
